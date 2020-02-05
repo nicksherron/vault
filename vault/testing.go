@@ -1843,6 +1843,7 @@ func (m *mockBuiltinRegistry) Keys(pluginType consts.PluginType) []string {
 		"mongodb-database-plugin",
 		"hana-database-plugin",
 		"influxdb-database-plugin",
+		"redshift-database-plugin",
 	}
 }
 
