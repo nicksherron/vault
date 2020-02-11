@@ -3,6 +3,7 @@ import { set, get, computed } from '@ember/object';
 import DS from 'ember-data';
 import clamp from 'vault/utils/clamp';
 import lazyCapabilities, { apiPath } from 'vault/macros/lazy-capabilities';
+import attachCapabilities from 'vault/lib/attach-capabilities';
 
 const { attr } = DS;
 
@@ -38,7 +39,7 @@ const ACTION_VALUES = {
   export: { isSupported: 'exportable', description: 'Get the named key', glyph: 'exit' },
 };
 
-export default DS.Model.extend({
+let Model = DS.Model.extend({
   type: attr('string', {
     defaultValue: 'aes256-gcm96',
   }),
@@ -143,10 +144,13 @@ export default DS.Model.extend({
     return types;
   }),
 
-  backend: attr('string', {
-    readOnly: true,
-  }),
+  backend: attr('string'),
 
   rotatePath: lazyCapabilities(apiPath`${'backend'}/keys/${'id'}/rotate`, 'backend', 'id'),
   canRotate: alias('rotatePath.canUpdate'),
+  canRead: alias('secretPath.canRead'),
+});
+
+export default attachCapabilities(Model, {
+  secretPath: apiPath`${'backend'}/keys/${'id'}`,
 });
